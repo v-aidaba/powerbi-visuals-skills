@@ -1,0 +1,22 @@
+{
+  "name": "powerbi-visuals-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agent Skills catalog for Power BI custom visual development.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Demonkratiy/powerbi-visuals-skills.git"
+  },
+  "scripts": {
+    "validate": "ts-node --project tsconfig.json tools/validate-skills.ts",
+    "skills-add": "ts-node --project tsconfig.json tools/skills-add.ts",
+    "skills-remove": "ts-node --project tsconfig.json tools/skills-remove.ts",
+    "skills-list": "ts-node --project tsconfig.json tools/skills-list.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

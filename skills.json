@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "repo": "https://github.com/Demonkratiy/powerbi-visuals-skills",
+  "defaultTarget": ".github/skills",
+  "defaultSkills": [],
+  "skills": [
+    {
+      "id": "dialog-box",
+      "path": "skills/dialog-box",
+      "version": "1.0.0",
+      "description": "Add a modal dialog box to a Power BI custom visual.",
+      "minApiVersion": "5.9.0",
+      "tags": [
+        "interactivity",
+        "ui"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "display-warning-icon",
+      "path": "skills/display-warning-icon",
+      "version": "1.0.0",
+      "description": "Show a warning icon overlay inside a Power BI custom visual.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "ui",
+        "data-validation"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    }
+  ]
+}
