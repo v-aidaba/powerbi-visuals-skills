@@ -22,7 +22,7 @@ This creates the directory structure from templates and adds an entry to `skills
 
 ```
 skills/<skill-id>/
-  SKILL.md               # from templates/new-skill/SKILL.md — fill in the placeholders
+  SKILL.md               # from templates/new-skill/SKILL.md - fill in the placeholders
   references/
     README.md             # from templates/new-skill/references/README.md
 ```
@@ -42,16 +42,16 @@ description: "One-line summary of what this skill teaches."
 
 Then write the body following these rules:
 
-- **Start with a trigger block** — clearly state "Use when …" and "Don't use when …" so agents know when to activate the skill.
+- **Start with a trigger block** - clearly state "Use when …" and "Don't use when …" so agents know when to activate the skill.
 - **Keep it lean.** The SKILL.md body should fit comfortably in an LLM context window. Aim for under ~200 lines.
-- **Move deep content to `references/`.** Step-by-step walkthroughs, large code samples, API tables, checklists — put these in `references/README.md` or additional files under `references/`.
+- **Move deep content to `references/`.** Step-by-step walkthroughs, large code samples, API tables, checklists - put these in `references/README.md` or additional files under `references/`.
 - **Be Power BI–specific.** Reference `capabilities.json`, `visual.ts`, format pane APIs, `powerbi-visuals-api`, certification constraints, and common pitfalls. Generic TypeScript advice belongs elsewhere.
 
 ### 4. Review the `skills.json` entry
 
 If you used `npm run skills-add`, an entry was already added to `skills.json` with placeholder values. Review and update it.
 
-The full schema is defined in [`tools/types.ts`](tools/types.ts) (`SkillEntry` interface) — this is the single source of truth for all fields. Key fields to check:
+The full schema is defined in [`tools/types.ts`](tools/types.ts#L11-L30) (`SkillEntry` interface) - this is the single source of truth for all fields. Key fields to check:
 
 - **`description`**: must match the `description` in SKILL.md frontmatter exactly.
 - **`version`**: start at `1.0.0`; bump when you update the skill content.
@@ -59,7 +59,7 @@ The full schema is defined in [`tools/types.ts`](tools/types.ts) (`SkillEntry` i
 - **`tags`**: one or more category labels (e.g. `ui`, `interactivity`, `data-validation`, `formatting`, `localization`).
 - **`dependencies`**: array of other skill IDs this skill recommends. Use `[]` if none.
 - `safe` must be `true` unless the skill contains executable content (strongly discouraged).
-- `scripts` must be `false` — no `scripts/` directories.
+- `scripts` must be `false` - no `scripts/` directories.
 
 ### 5. Validate locally
 

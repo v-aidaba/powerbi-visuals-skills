@@ -1,4 +1,4 @@
-# {{SKILL_TITLE}} — Reference
+# {{SKILL_TITLE}} - Reference
 
 Detailed implementation guide.
 

@@ -1,4 +1,4 @@
-# Dialog Box — Reference
+# Dialog Box - Reference
 
 Detailed guidance for adding a modal dialog to a Power BI custom visual.
 
@@ -88,7 +88,7 @@ private async showDialog(): Promise<void> {
             options
         );
         if (result?.resultData?.confirmed) {
-            // User clicked OK — proceed with action.
+            // User clicked OK - proceed with action.
         }
     } catch (err) {
         // User dismissed without result, or an error occurred.
@@ -128,4 +128,4 @@ Call `this.showDialog()` from a button click handler, context menu, or any user 
 | `openModalDialog is not a function`      | API version below 5.9.0                          |
 | Dialog opens but shows blank page        | HTML file not registered in `pbiviz.json` assets |
 | `result` is `undefined` after close      | `dialogHost.setResult()` was never called        |
-| Dialog content cannot access visual DOM  | Expected — the dialog runs in a sandboxed iframe |
+| Dialog content cannot access visual DOM  | Expected - the dialog runs in a sandboxed iframe |

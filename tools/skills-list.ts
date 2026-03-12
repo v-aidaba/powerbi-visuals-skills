@@ -23,7 +23,7 @@ if (skills.length === 0) {
 // Calculate column widths
 const idWidth = Math.max(2, ...skills.map((s) => s.id.length));
 const verWidth = Math.max(7, ...skills.map((s) => s.version.length));
-const apiWidth = Math.max(6, ...skills.map((s) => (s.minApiVersion || "—").length));
+const apiWidth = Math.max(6, ...skills.map((s) => (s.minApiVersion || "-").length));
 
 const header = `${"ID".padEnd(idWidth)}  ${"Version".padEnd(verWidth)}  ${"MinAPI".padEnd(apiWidth)}  Description`;
 const sep = "-".repeat(header.length);
@@ -33,7 +33,7 @@ console.log(header);
 console.log(sep);
 
 for (const s of skills) {
-    const api = s.minApiVersion || "—";
+    const api = s.minApiVersion || "-";
     console.log(`${s.id.padEnd(idWidth)}  ${s.version.padEnd(verWidth)}  ${api.padEnd(apiWidth)}  ${s.description}`);
 }
 

@@ -25,8 +25,8 @@ description: "{{DESCRIPTION}}"
 
 ### Key concepts
 
-1. **Concept A** — <!-- short explanation -->
-2. **Concept B** — <!-- short explanation -->
+1. **Concept A** - <!-- short explanation -->
+2. **Concept B** - <!-- short explanation -->
 
 ### Minimal implementation steps
 

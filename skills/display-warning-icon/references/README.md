@@ -1,4 +1,4 @@
-# Display Warning Icon — Reference
+# Display Warning Icon - Reference
 
 Detailed implementation guide for showing a warning icon overlay in a Power BI custom visual.
 
@@ -30,7 +30,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         this.warningOverlay.setAttribute("aria-label", "Visual warning");
         this.warningOverlay.style.display = "none";
 
-        // Icon + message (using a Unicode warning sign — no external assets needed).
+        // Icon + message (using a Unicode warning sign - no external assets needed).
         const icon = document.createElement("span");
         icon.className = "warning-icon";
         icon.textContent = "\u26A0"; // ⚠
@@ -115,7 +115,7 @@ private validateData(dataViews: powerbi.DataView[] | undefined): boolean {
 private showWarning(text: string): void {
     const messageEl = this.warningOverlay.querySelector(".warning-message");
     if (messageEl) {
-        messageEl.textContent = text; // Safe — uses textContent, not innerHTML.
+        messageEl.textContent = text; // Safe - uses textContent, not innerHTML.
     }
     this.warningOverlay.style.display = "flex";
 }
@@ -136,7 +136,7 @@ icon.innerHTML = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xm
 </svg>`;
 ```
 
-> When using inline SVG, ensure the markup is a static string literal — never interpolate user data into SVG markup.
+> When using inline SVG, ensure the markup is a static string literal - never interpolate user data into SVG markup.
 
 ## Checklist
 

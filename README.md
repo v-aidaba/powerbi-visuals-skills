@@ -1,6 +1,6 @@
-# Power BI Custom Visuals — Agent Skills
+# Power BI Custom Visuals - Agent Skills
 
-A catalog of [Agent Skills](https://github.com/github/agent-skills-spec) for Power BI custom visual development. Each skill explains to an AI agent how to implement a specific feature or API in a custom visual — covering the implementation steps, certification constraints, and common pitfalls.
+A catalog of [Agent Skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills) for Power BI custom visual development. Each skill explains to an AI agent how to implement a specific feature or API in a custom visual - covering the implementation steps, certification constraints, and common pitfalls.
 
 ## How it works
 
@@ -42,31 +42,17 @@ Only the directories listed in `skills.json` under `skills[].path` are eligible 
 
 ## `skills.json` manifest
 
-The root `skills.json` file drives the install command. Key fields:
+The root [`skills.json`](/skills.json) file drives the install command. Key fields:
 
 | Field              | Description                                                        |
 | ------------------ | ------------------------------------------------------------------ |
-| `schemaVersion`    | Manifest schema version (currently `1`).                           |
+| `schemaVersion`    | Manifest schema version.                           |
 | `repo`             | GitHub repository URL for this catalog.                            |
 | `defaultTarget`    | Where skills are placed in the consuming project (`.github/skills`). |
 | `defaultSkills`    | Array of skill IDs installed by default when no selection is given. |
-| `skills`           | Array of skill descriptors (see below).                            |
+| `skills`           | Array of [skill descriptors](tools/types.ts#L11-L30) (see below).                            |
 
 ### Skill descriptor
-
-```jsonc
-{
-  "id": "dialog-box",
-  "path": "skills/dialog-box",
-  "version": "1.0.0",           // semver — enables update detection
-  "description": "Add a modal dialog box to a Power BI custom visual.",
-  "minApiVersion": "5.9.0",     // minimum powerbi-visuals-api version
-  "tags": ["interactivity", "ui"],
-  "dependencies": [],            // other skill IDs this skill recommends
-  "safe": true,                  // no executable code inside
-  "scripts": false               // no scripts/ directory
-}
-```
 
 | Field             | Required | Description                                                             |
 | ----------------- | -------- | ----------------------------------------------------------------------- |
