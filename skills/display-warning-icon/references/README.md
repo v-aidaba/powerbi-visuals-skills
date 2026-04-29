@@ -1,179 +1,342 @@
-# Display Warning Icon - Reference
+# Power BI Visual — Warning Icon
 
-Detailed implementation guide for showing a warning icon overlay in a Power BI custom visual.
+## Overview
 
-## Prerequisites
+The Warning Icon feature displays an alert icon in the visual's header bar (top-right corner) with a tooltip message when hovered. This is the standard Power BI pattern for communicating non-blocking issues to report consumers — such as missing data fields, truncated datasets, or unsupported values.
 
-- A Power BI custom visual project created with `pbiviz new`.
-- Basic familiarity with the visual lifecycle (`constructor`, `update`, `destroy`).
+**Why this matters:** Warning icons are the official way to notify users about data quality issues without disrupting the visual rendering. They appear automatically in the header and are recognized by all Power BI users as a standard notification pattern.
 
-## Step-by-step walkthrough
+**Official documentation:** https://learn.microsoft.com/en-us/power-bi/developer/visuals/visual-display-warning-icon
 
-### 1. Add a warning overlay element in the constructor
+## Requirements
+
+- **API version:** 2.6.0 or higher (recommended: 5.3.0+)
+- **powerbi-visuals-api** package must be installed
+- No additional capabilities or privileges needed — the API is available directly on `IVisualHost`
+
+## Step-by-Step Implementation
+
+### Step 1: Store the Host Reference
 
 ```typescript
 import powerbi from "powerbi-visuals-api";
+
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 
-export class Visual implements powerbi.extensibility.visual.IVisual {
+export class Visual implements IVisual {
+    private host: IVisualHost;
     private target: HTMLElement;
-    private warningOverlay: HTMLElement;
 
-    constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
+    constructor(options: VisualConstructorOptions) {
+        this.host = options.host;
         this.target = options.element;
-
-        // Create the overlay once, hidden by default.
-        this.warningOverlay = document.createElement("div");
-        this.warningOverlay.className = "warning-overlay";
-        this.warningOverlay.setAttribute("role", "alert");
-        this.warningOverlay.setAttribute("aria-label", "Visual warning");
-        this.warningOverlay.style.display = "none";
-
-        // Icon + message (using a Unicode warning sign - no external assets needed).
-        const icon = document.createElement("span");
-        icon.className = "warning-icon";
-        icon.textContent = "\u26A0"; // ⚠
-
-        const message = document.createElement("span");
-        message.className = "warning-message";
-        message.textContent = "Data is missing or invalid.";
-
-        this.warningOverlay.appendChild(icon);
-        this.warningOverlay.appendChild(message);
-        this.target.appendChild(this.warningOverlay);
     }
-    // ...
 }
 ```
 
-### 2. Add CSS styles
+### Step 2: Call `displayWarningIcon` in update()
 
-Add the following to your visual's stylesheet (e.g., `style/visual.less` or `visual.css`):
-
-```css
-.warning-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.85);
-    z-index: 100;
-    pointer-events: none;
-}
-
-.warning-icon {
-    font-size: 48px;
-    line-height: 1;
-    color: #d83b01; /* Office orange-red */
-}
-
-.warning-message {
-    margin-top: 8px;
-    font-family: "Segoe UI", sans-serif;
-    font-size: 14px;
-    color: #323130;
-    text-align: center;
-    padding: 0 16px;
-}
-```
-
-### 3. Toggle visibility in `update()`
+Evaluate conditions inside `update()` and call `displayWarningIcon` when a warning is needed:
 
 ```typescript
 public update(options: VisualUpdateOptions): void {
-    const dataViews = options.dataViews;
-    const hasValidData = this.validateData(dataViews);
+    const dataView = options.dataViews && options.dataViews[0];
 
-    if (!hasValidData) {
-        this.showWarning("Required data fields are not mapped.");
-        return; // Skip normal rendering.
+    // Warn when no data is provided
+    if (!dataView || !dataView.categorical || !dataView.categorical.values) {
+        this.host.displayWarningIcon(
+            "No data available",
+            "Add a measure to the Values field to display this visual."
+        );
+        return;
     }
 
-    this.hideWarning();
-    // ... proceed with normal rendering.
-}
-
-private validateData(dataViews: powerbi.DataView[] | undefined): boolean {
-    if (!dataViews || dataViews.length === 0) {
-        return false;
-    }
-
-    const categorical = dataViews[0].categorical;
-    if (!categorical || !categorical.categories || categorical.categories.length === 0) {
-        return false;
-    }
-
-    return true;
-}
-
-private showWarning(text: string): void {
-    const messageEl = this.warningOverlay.querySelector(".warning-message");
-    if (messageEl) {
-        messageEl.textContent = text; // Safe - uses textContent, not innerHTML.
-    }
-    this.warningOverlay.style.display = "flex";
-}
-
-private hideWarning(): void {
-    this.warningOverlay.style.display = "none";
+    // Normal rendering logic
+    this.renderVisual(dataView.categorical);
 }
 ```
 
-### 4. Customize the icon
+### Step 3: Multiple Condition Checks
 
-You can swap the Unicode character for an inline SVG if you need a specific icon style:
+When you need to check several conditions, evaluate them in priority order. Only the **last** `displayWarningIcon` call in a single `update()` cycle will be shown (Power BI displays one warning at a time):
 
 ```typescript
-icon.innerHTML = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M24 4L2 44h44L24 4z" fill="#d83b01"/>
-  <text x="24" y="36" text-anchor="middle" fill="#fff" font-size="24" font-weight="bold">!</text>
-</svg>`;
+public update(options: VisualUpdateOptions): void {
+    const dataView = options.dataViews?.[0];
+    const categorical = dataView?.categorical;
+
+    // Priority 1: No data at all
+    if (!dataView) {
+        this.host.displayWarningIcon(
+            "No data available",
+            "Please add data fields to this visual."
+        );
+        return;
+    }
+
+    // Priority 2: Missing category field
+    if (!categorical?.categories || categorical.categories.length === 0) {
+        this.host.displayWarningIcon(
+            "Missing required field",
+            "Please add a field to the Category data role."
+        );
+        return;
+    }
+
+    // Priority 3: Missing measure field
+    if (!categorical?.values || categorical.values.length === 0) {
+        this.host.displayWarningIcon(
+            "Missing measure",
+            "Please add at least one measure to the Values data role."
+        );
+        return;
+    }
+
+    // Priority 4: Data truncation warning (non-blocking — still render)
+    if (categorical.categories[0].values.length >= 1000) {
+        this.host.displayWarningIcon(
+            "Data truncated",
+            "Only the first 1000 rows are shown. Apply filters to reduce data volume."
+        );
+    }
+
+    // Render visual (proceed even if truncation warning was shown)
+    this.renderVisual(categorical);
+}
 ```
 
-> When using inline SVG, ensure the markup is a static string literal - never interpolate user data into SVG markup.
+### Step 4: Conditional Warnings with Normal Rendering
 
-## Checklist
+Some warnings are non-blocking — the visual still renders, but alerts the user to a potential issue:
 
-- [ ] Warning overlay element created once in `constructor`, not on every `update()`.
-- [ ] Overlay uses `display: none` / `display: flex` toggling (not element removal/creation).
-- [ ] `role="alert"` and `aria-label` set for accessibility.
-- [ ] `textContent` used (not `innerHTML`) for user-facing message text.
-- [ ] Overlay positioned with `position: absolute` inside the visual's root container.
-- [ ] Overlay uses `pointer-events: none` so it does not block interaction when hidden.
-- [ ] No external icon fonts or images loaded at runtime.
-- [ ] Warning hides cleanly when valid data arrives.
-- [ ] Tested at multiple visual sizes (small, medium, large).
-- [ ] Tested in Power BI Desktop and Power BI Service.
+```typescript
+public update(options: VisualUpdateOptions): void {
+    const dataView = options.dataViews?.[0];
+    const categorical = dataView?.categorical;
 
-## Certification notes
+    if (!categorical?.categories || !categorical?.values) {
+        this.host.displayWarningIcon(
+            "Incomplete data",
+            "Both a category and a measure are required."
+        );
+        return;
+    }
 
-| Requirement                                              | Status |
-| -------------------------------------------------------- | ------ |
-| No external resources loaded at runtime                  | Required for certification |
-| No `innerHTML` with dynamic/user data                    | Required for certification |
-| Accessibility attributes present (`role`, `aria-label`)  | Required for certification |
-| Visual renders correctly when data becomes valid again   | Required for certification |
+    // Check for negative values (visual doesn't support them)
+    const values = categorical.values[0].values as number[];
+    const hasNegatives = values.some(v => v != null && v < 0);
 
-## Troubleshooting
+    if (hasNegatives) {
+        this.host.displayWarningIcon(
+            "Unsupported values",
+            "This visual does not support negative values. Negative values are excluded from the chart."
+        );
+    }
 
-| Symptom                                   | Likely cause                                             |
-| ----------------------------------------- | -------------------------------------------------------- |
-| Warning never appears                     | `display` not set to `flex`; or condition logic inverted |
-| Warning never disappears                  | `hideWarning()` not called when data becomes valid       |
-| Warning renders outside the visual box    | Overlay appended to wrong parent; or missing `position: absolute` |
-| Multiple overlays stacking up             | New element created on every `update()` call             |
-| Screen reader does not announce warning   | Missing `role="alert"` attribute                         |
+    // Filter out negatives and render
+    const filteredData = values.filter(v => v == null || v >= 0);
+    this.renderChart(categorical.categories[0].values, filteredData);
+}
+```
 
-## Alternative patterns
+---
 
-| Pattern                        | When to use                                                        |
-| ------------------------------ | ------------------------------------------------------------------ |
-| Landing page                   | Full "get started" experience when no data is bound at all         |
-| Tooltip with info icon         | Non-blocking hint; data is usable but suboptimal                   |
-| Format pane validation message | Warning about a format setting value, not about data               |
+## API Reference
+
+### Method Signature
+
+```typescript
+IVisualHost.displayWarningIcon(title: string, detailedMessage: string): void
+```
+
+| Parameter | Type | Description |
+|---|---|---|
+| `title` | `string` | Short warning title shown in bold in the tooltip |
+| `detailedMessage` | `string` | Longer explanation shown below the title in the tooltip |
+
+### Behavior
+
+- The warning icon appears in the visual **header bar** (top-right corner)
+- Hovering over the icon shows a tooltip with the title and message
+- The icon is **automatically cleared** when a new `update()` cycle runs without calling `displayWarningIcon()`
+- There is **no explicit "clear" method** — simply don't call it when conditions are normal
+- Only **one warning** can be displayed at a time — multiple calls in one `update()` show only the last one
+- The tooltip supports **plain text only** — no HTML or markdown
+
+---
+
+## Common Warning Scenarios
+
+| Scenario | Title | Message |
+|---|---|---|
+| No data bound | `"No data available"` | `"Drag a measure into the Values field well."` |
+| Missing required field | `"Missing required field"` | `"The Category field is required for this visual."` |
+| Data exceeds row limit | `"Data truncated"` | `"Only the first 1000 rows are shown. Apply filters to reduce data."` |
+| Negative values unsupported | `"Unsupported values"` | `"This visual does not support negative values. Negative values are excluded."` |
+| Deprecated configuration | `"Configuration warning"` | `"The current settings use a deprecated option. Please update your configuration."` |
+| Too many categories | `"Too many categories"` | `"Performance may be affected. Consider filtering to fewer than 100 categories."` |
+
+---
+
+## Edge Cases & Pitfalls
+
+### Edge Case 1: Multiple warnings — only the last one shows
+
+Power BI displays only one warning icon at a time. If you call `displayWarningIcon` multiple times, only the last call wins:
+
+```typescript
+// WRONG — only the second warning will be visible
+this.host.displayWarningIcon("Warning 1", "First issue.");
+this.host.displayWarningIcon("Warning 2", "Second issue.");  // ❌ Overwrites first
+
+// CORRECT — concatenate multiple issues into one message
+const warnings: string[] = [];
+if (hasNegatives) warnings.push("Negative values are excluded.");
+if (hasTruncation) warnings.push("Data is truncated to 1000 rows.");
+
+if (warnings.length > 0) {
+    this.host.displayWarningIcon(
+        "Data issues detected",
+        warnings.join(" ")  // ✅ Single call with combined message
+    );
+}
+```
+
+### Edge Case 2: Warning automatically clears — no manual clear needed
+
+```typescript
+public update(options: VisualUpdateOptions): void {
+    const dataView = options.dataViews?.[0];
+
+    if (!dataView) {
+        // Warning icon appears
+        this.host.displayWarningIcon("No data", "Please add data fields.");
+        return;
+    }
+
+    // No displayWarningIcon call here — icon automatically disappears
+    // ✅ This is correct — no "clearWarning()" method exists
+    this.renderVisual(dataView);
+}
+```
+
+### Edge Case 3: Warning on early return vs. non-blocking warning
+
+Decide whether the warning should stop rendering or allow it to continue:
+
+```typescript
+public update(options: VisualUpdateOptions): void {
+    const categorical = options.dataViews?.[0]?.categorical;
+
+    // BLOCKING warning — visual cannot render without data
+    if (!categorical?.categories) {
+        this.host.displayWarningIcon("Missing field", "Add a category field.");
+        this.clearVisual();  // Clear any previous render
+        return;  // ✅ Stop here — nothing to render
+    }
+
+    // NON-BLOCKING warning — visual renders but alerts the user
+    if (categorical.categories[0].values.length > 500) {
+        this.host.displayWarningIcon("Performance notice", "Large dataset may affect performance.");
+        // ✅ Don't return — continue rendering
+    }
+
+    this.renderVisual(categorical);
+}
+```
+
+### Edge Case 4: Warning in combination with rendering events
+
+When using rendering events (renderingStarted/renderingFinished), warnings must not prevent the rendering signal:
+
+```typescript
+public update(options: VisualUpdateOptions): void {
+    this.events.renderingStarted(options);
+
+    const dataView = options.dataViews?.[0];
+
+    if (!dataView || !dataView.categorical) {
+        this.host.displayWarningIcon("No data", "Add data fields to the visual.");
+        this.clearVisual();
+        this.events.renderingFinished(options);  // ✅ Still must signal finished!
+        return;
+    }
+
+    try {
+        this.renderVisual(dataView.categorical);
+        this.events.renderingFinished(options);
+    } catch (error) {
+        this.events.renderingFailed(options, String(error));
+    }
+}
+```
+
+### Edge Case 5: Empty strings passed to displayWarningIcon
+
+```typescript
+// WRONG — empty title/message shows a blank tooltip
+this.host.displayWarningIcon("", "");  // ❌ Shows icon with empty tooltip
+
+// CORRECT — always provide meaningful text
+this.host.displayWarningIcon(
+    "Data issue",
+    "Unable to display the visual with the current data configuration."
+);  // ✅
+```
+
+### Edge Case 6: Warning visible to report consumers (not just developers)
+
+The warning icon is visible to everyone viewing the report — not just in development mode. Keep messages user-friendly and actionable:
+
+```typescript
+// WRONG — developer-facing message
+this.host.displayWarningIcon("Error", "dataView.categorical is null");  // ❌
+
+// CORRECT — user-facing message
+this.host.displayWarningIcon(
+    "Missing data",
+    "Please add a category and measure field to display this chart."
+);  // ✅
+```
+
+---
+
+## Anti-Patterns to Avoid
+
+| Anti-Pattern | Why It's Wrong | Fix |
+|---|---|---|
+| Custom DOM warning icon inside the visual | Doesn't follow Power BI UX patterns | Use `displayWarningIcon()` API |
+| Calling `displayWarningIcon` for errors that prevent all rendering | Errors need visible feedback in the canvas | Show error UI in visual + optionally warning icon |
+| Multiple `displayWarningIcon` calls expecting all to show | Only last call wins | Concatenate messages into one call |
+| Developer/technical language in warning messages | Report consumers won't understand | Use plain, actionable language |
+| Trying to manually clear the warning icon | No clear API exists | Simply don't call `displayWarningIcon` in next `update()` |
+| Calling `displayWarningIcon` outside of `update()` | May not persist or may be overwritten | Always call inside `update()` |
+
+---
+
+## Files That May Need Changes
+
+- `src/visual.ts` — Add `displayWarningIcon()` calls in the `update()` method
+
+No additional files, config changes, or capabilities updates are required for warning icons. The API is available directly on `IVisualHost`.
+
+## Validation Checklist
+
+- [ ] `IVisualHost` is stored from the constructor options
+- [ ] `displayWarningIcon()` is called with both `title` and `detailedMessage` strings
+- [ ] The warning condition is evaluated inside the `update()` method
+- [ ] The warning icon is not shown when data is valid (automatic clearing)
+- [ ] Warning messages are clear, user-friendly, and actionable (not developer jargon)
+- [ ] Multiple issues are concatenated into a single `displayWarningIcon` call
+- [ ] Non-blocking warnings don't prevent rendering (no premature `return`)
+- [ ] Blocking warnings clear the visual canvas before returning
+- [ ] If rendering events are used, `renderingFinished` is still called even when showing a warning
+- [ ] The `powerbi-visuals-api` version is 2.6.0 or higher
+- [ ] No unrelated files were changed
+
+## Reference
+
+Official Microsoft documentation: https://learn.microsoft.com/en-us/power-bi/developer/visuals/visual-display-warning-icon
