@@ -5,11 +5,109 @@
   "defaultSkills": [],
   "skills": [
     {
-      "id": "dialog-box",
-      "path": "skills/dialog-box",
+      "id": "add-colors",
+      "path": "skills/add-colors",
       "version": "1.0.0",
-      "description": "Add a modal dialog box to a Power BI custom visual.",
-      "minApiVersion": "5.9.0",
+      "description": "Add color support to a Power BI custom visual using the color palette API.",
+      "minApiVersion": "5.1.0",
+      "tags": [
+        "formatting",
+        "colors"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "add-localization",
+      "path": "skills/add-localization",
+      "version": "1.0.0",
+      "description": "Add localization support to display text in the user's language.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "localization",
+        "i18n"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "add-selections",
+      "path": "skills/add-selections",
+      "version": "1.0.0",
+      "description": "Add selection support to respond to user clicks on data points.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "selections"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "advanced-edit-mode",
+      "path": "skills/advanced-edit-mode",
+      "version": "1.0.0",
+      "description": "Add advanced edit mode with a specialized editing interface.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "editing"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "analytics-pane",
+      "path": "skills/analytics-pane",
+      "version": "1.0.0",
+      "description": "Add Analytics Pane support with dynamic reference lines.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "analytics",
+        "formatting"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "bookmarks-support",
+      "path": "skills/bookmarks-support",
+      "version": "1.0.0",
+      "description": "Add bookmarks support to capture and restore visual state.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "state"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "conditional-formatting",
+      "path": "skills/conditional-formatting",
+      "version": "1.0.0",
+      "description": "Add conditional formatting to dynamically change colors based on data values.",
+      "minApiVersion": "5.1.0",
+      "tags": [
+        "formatting",
+        "colors"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "context-menu",
+      "path": "skills/context-menu",
+      "version": "1.0.0",
+      "description": "Add right-click context menu support to a Power BI custom visual.",
+      "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
         "ui"
@@ -19,14 +117,294 @@
       "scripts": false
     },
     {
+      "id": "dialog-box",
+      "path": "skills/dialog-box",
+      "version": "1.0.0",
+      "description": "Add a modal dialog box to a Power BI custom visual using openModalDialog API.",
+      "minApiVersion": "4.0.0",
+      "tags": [
+        "interactivity",
+        "ui"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "display-subtotal-data",
+      "path": "skills/display-subtotal-data",
+      "version": "1.0.0",
+      "description": "Add total and subtotal support for matrix visuals.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "data",
+        "matrix"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
       "id": "display-warning-icon",
       "path": "skills/display-warning-icon",
       "version": "1.0.0",
-      "description": "Show a warning icon overlay inside a Power BI custom visual.",
+      "description": "Display a warning icon in the visual header using the displayWarningIcon API.",
+      "minApiVersion": "2.6.0",
+      "tags": [
+        "ui",
+        "data-validation"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "drill-down",
+      "path": "skills/drill-down",
+      "version": "1.0.0",
+      "description": "Add drill-down support to navigate through data hierarchies.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "data"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "dynamic-drill-support",
+      "path": "skills/dynamic-drill-support",
+      "version": "1.0.0",
+      "description": "Programmatically enable or disable drilling in a custom visual.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "data"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "fetch-more-data",
+      "path": "skills/fetch-more-data",
+      "version": "1.0.0",
+      "description": "Load data beyond the default 30K row limit using fetchMoreData API.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "data",
+        "performance"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "file-download-api",
+      "path": "skills/file-download-api",
+      "version": "1.0.0",
+      "description": "Download data from a custom visual into a file on the user's device.",
+      "minApiVersion": "5.1.0",
+      "tags": [
+        "data",
+        "export"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "format-pane",
+      "path": "skills/format-pane",
+      "version": "1.0.0",
+      "description": "Add Format Pane support using the formatting settings model.",
+      "minApiVersion": "5.1.0",
+      "tags": [
+        "formatting",
+        "ui"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "high-contrast-mode",
+      "path": "skills/high-contrast-mode",
+      "version": "1.0.0",
+      "description": "Add high-contrast mode support for accessibility.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "accessibility",
+        "colors"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "highlight-data",
+      "path": "skills/highlight-data",
+      "version": "1.0.0",
+      "description": "Add data highlighting to show selected data points across visuals.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "data"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "keyboard-navigation",
+      "path": "skills/keyboard-navigation",
+      "version": "1.0.0",
+      "description": "Add keyboard navigation for accessibility compliance.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "accessibility",
+        "interactivity"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "landing-page",
+      "path": "skills/landing-page",
+      "version": "1.0.0",
+      "description": "Add a landing page displayed when no data is mapped to the visual.",
       "minApiVersion": "3.8.0",
       "tags": [
         "ui",
         "data-validation"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "launch-url",
+      "path": "skills/launch-url",
+      "version": "1.0.0",
+      "description": "Open a URL in a new browser tab using the Launch URL API.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "navigation"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "local-storage-api",
+      "path": "skills/local-storage-api",
+      "version": "1.0.0",
+      "description": "Store data in browser local storage from a Power BI custom visual.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "data",
+        "state"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "on-object-formatting",
+      "path": "skills/on-object-formatting",
+      "version": "1.0.0",
+      "description": "Add on-object formatting for direct element selection and modification.",
+      "minApiVersion": "5.1.0",
+      "tags": [
+        "formatting",
+        "interactivity"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "permissions-api",
+      "path": "skills/permissions-api",
+      "version": "1.0.0",
+      "description": "Query host permissions at runtime using the Check Permissions API.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "security",
+        "permissions"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "rendering-events",
+      "path": "skills/rendering-events",
+      "version": "1.0.0",
+      "description": "Signal rendering start and finish events to Power BI.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "lifecycle",
+        "certification"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "selection-across-visuals",
+      "path": "skills/selection-across-visuals",
+      "version": "1.0.0",
+      "description": "Enable multi-visual selection of data points across visuals.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "selections"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "sync-slicers",
+      "path": "skills/sync-slicers",
+      "version": "1.0.0",
+      "description": "Synchronize slicer filter state across multiple report pages.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "filtering"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "unit-tests",
+      "path": "skills/unit-tests",
+      "version": "1.0.0",
+      "description": "Add unit tests to verify data transformations and rendering logic.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "testing",
+        "quality"
+      ],
+      "dependencies": [],
+      "safe": true,
+      "scripts": false
+    },
+    {
+      "id": "visuals-tooltips",
+      "path": "skills/visuals-tooltips",
+      "version": "1.0.0",
+      "description": "Add tooltips to show contextual information on hover.",
+      "minApiVersion": "3.8.0",
+      "tags": [
+        "interactivity",
+        "ui"
       ],
       "dependencies": [],
       "safe": true,
