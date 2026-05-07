@@ -5,42 +5,28 @@ description: "{{DESCRIPTION}}"
 
 # {{SKILL_TITLE}}
 
-<!-- One-paragraph summary of what this skill teaches an AI agent to implement. -->
+<!-- 1-2 sentences: what this feature does and why a visual needs it. -->
 
 ## Trigger
 
 **Use when:**
 
-- <!-- The user asks to … -->
-- <!-- The user needs to implement … -->
+- <!-- Primary user request phrasing -->
+- <!-- Alternative phrasing / synonym -->
+- <!-- Technical phrasing: "needs to implement X API" -->
 
 **Don't use when:**
 
-- <!-- The user wants … (use X instead). -->
-- <!-- The target API version is below … -->
+- <!-- Edge case → which skill to use instead -->
+- <!-- Another edge case -->
+- The target API version is below <!-- X.Y.0 -->.
 
-## Overview
+## Applicability
 
-<!-- Brief explanation of the feature/API this skill covers. -->
+- **Min API version:** <!-- X.Y.0 -->
+- **Requires:** <!-- packages, capability flags, other skills -->
+- **Certification:** <!-- safe / has restrictions — one-line note -->
 
-### Key concepts
+## Implementation
 
-1. **Concept A** - <!-- short explanation -->
-2. **Concept B** - <!-- short explanation -->
-
-### Minimal implementation steps
-
-1. <!-- Step 1 -->
-2. <!-- Step 2 -->
-3. <!-- Step 3 -->
-
-### Certification constraints
-
-- <!-- Constraint relevant to AppSource certification -->
-
-### Common mistakes
-
-- <!-- Mistake 1 -->
-- <!-- Mistake 2 -->
-
-See [references/README.md](references/README.md) for a detailed walkthrough, code samples, and a checklist.
+Follow [references/README.md](references/README.md) for the complete step-by-step guide.
