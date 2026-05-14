@@ -26,7 +26,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "localization",
-        "i18n"
+        "i18n",
+        "translate",
+        "language",
+        "internationalization"
       ],
       "dependencies": [],
       "safe": true,
@@ -40,7 +43,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "selections"
+        "selections",
+        "cross-filter",
+        "click",
+        "data-points"
       ],
       "dependencies": [],
       "safe": true,
@@ -54,7 +60,9 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "editing"
+        "editing",
+        "edit-mode",
+        "advanced-editing"
       ],
       "dependencies": [],
       "safe": true,
@@ -68,7 +76,9 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "analytics",
-        "formatting"
+        "formatting",
+        "reference-lines",
+        "trend-lines"
       ],
       "dependencies": [],
       "safe": true,
@@ -82,7 +92,11 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "state"
+        "state",
+        "bookmarks",
+        "bookmark",
+        "save-state",
+        "restore-state"
       ],
       "dependencies": [],
       "safe": true,
@@ -96,7 +110,12 @@
       "minApiVersion": "5.1.0",
       "tags": [
         "formatting",
-        "colors"
+        "colors",
+        "conditional",
+        "conditional-formatting",
+        "fx-button",
+        "rules",
+        "gradient"
       ],
       "dependencies": [],
       "safe": true,
@@ -110,7 +129,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "ui"
+        "ui",
+        "context-menu",
+        "right-click",
+        "menu"
       ],
       "dependencies": [],
       "safe": true,
@@ -124,7 +146,11 @@
       "minApiVersion": "4.0.0",
       "tags": [
         "interactivity",
-        "ui"
+        "ui",
+        "dialog",
+        "modal",
+        "popup",
+        "dialog-box"
       ],
       "dependencies": [],
       "safe": true,
@@ -138,7 +164,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "data",
-        "matrix"
+        "matrix",
+        "subtotals",
+        "totals",
+        "subtotal"
       ],
       "dependencies": [],
       "safe": true,
@@ -152,7 +181,10 @@
       "minApiVersion": "2.6.0",
       "tags": [
         "ui",
-        "data-validation"
+        "data-validation",
+        "warning",
+        "alert",
+        "warning-icon"
       ],
       "dependencies": [],
       "safe": true,
@@ -166,7 +198,11 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "data"
+        "data",
+        "drill-down",
+        "drilldown",
+        "drill",
+        "hierarchy"
       ],
       "dependencies": [],
       "safe": true,
@@ -180,7 +216,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "data"
+        "data",
+        "dynamic-drill",
+        "drill-control",
+        "toggle-drill"
       ],
       "dependencies": [],
       "safe": true,
@@ -194,7 +233,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "data",
-        "performance"
+        "performance",
+        "pagination",
+        "fetch-more",
+        "large-data"
       ],
       "dependencies": [],
       "safe": true,
@@ -208,7 +250,10 @@
       "minApiVersion": "5.1.0",
       "tags": [
         "data",
-        "export"
+        "export",
+        "download",
+        "file-download",
+        "save-file"
       ],
       "dependencies": [],
       "safe": true,
@@ -222,7 +267,10 @@
       "minApiVersion": "5.1.0",
       "tags": [
         "formatting",
-        "ui"
+        "ui",
+        "format-pane",
+        "formatting-model",
+        "properties"
       ],
       "dependencies": [],
       "safe": true,
@@ -236,7 +284,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "accessibility",
-        "colors"
+        "colors",
+        "high-contrast",
+        "contrast",
+        "a11y"
       ],
       "dependencies": [],
       "safe": true,
@@ -250,7 +301,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "data"
+        "data",
+        "highlight",
+        "highlighting",
+        "cross-highlighting"
       ],
       "dependencies": [],
       "safe": true,
@@ -264,7 +318,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "accessibility",
-        "interactivity"
+        "interactivity",
+        "keyboard",
+        "navigation",
+        "a11y"
       ],
       "dependencies": [],
       "safe": true,
@@ -278,7 +335,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "ui",
-        "data-validation"
+        "data-validation",
+        "landing-page",
+        "empty-state",
+        "placeholder"
       ],
       "dependencies": [],
       "safe": true,
@@ -292,7 +352,11 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "navigation"
+        "navigation",
+        "url",
+        "launch-url",
+        "link",
+        "hyperlink"
       ],
       "dependencies": [],
       "safe": true,
@@ -306,7 +370,11 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "data",
-        "state"
+        "state",
+        "local-storage",
+        "storage",
+        "persist",
+        "cache"
       ],
       "dependencies": [],
       "safe": true,
@@ -320,7 +388,10 @@
       "minApiVersion": "5.1.0",
       "tags": [
         "formatting",
-        "interactivity"
+        "interactivity",
+        "on-object",
+        "subselection",
+        "canvas-formatting"
       ],
       "dependencies": [],
       "safe": true,
@@ -334,7 +405,9 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "security",
-        "permissions"
+        "permissions",
+        "privileges",
+        "check-permissions"
       ],
       "dependencies": [],
       "safe": true,
@@ -348,7 +421,9 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "lifecycle",
-        "certification"
+        "certification",
+        "rendering",
+        "render-events"
       ],
       "dependencies": [],
       "safe": true,
@@ -362,7 +437,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "selections"
+        "selections",
+        "multi-visual",
+        "cross-visual",
+        "ctrl-select"
       ],
       "dependencies": [],
       "safe": true,
@@ -376,7 +454,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "filtering"
+        "filtering",
+        "slicers",
+        "sync",
+        "synchronize"
       ],
       "dependencies": [],
       "safe": true,
@@ -390,7 +471,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "testing",
-        "quality"
+        "quality",
+        "unit-tests",
+        "jest",
+        "jasmine"
       ],
       "dependencies": [],
       "safe": true,
@@ -404,7 +488,10 @@
       "minApiVersion": "3.8.0",
       "tags": [
         "interactivity",
-        "ui"
+        "ui",
+        "tooltips",
+        "tooltip",
+        "hover"
       ],
       "dependencies": [],
       "safe": true,
