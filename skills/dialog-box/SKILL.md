@@ -13,7 +13,7 @@ The Dialog Box (Modal Dialog) feature allows a Power BI custom visual to open a 
 
 - The user asks to add a dialog, modal, popup, or overlay to a Power BI custom visual.
 - The user wants to show detailed information, a configuration form, or a confirmation prompt that requires a separate window within the visual.
-- The user needs to implement `openModalDialog` or `IDialogOptions` in a custom visual project.
+- The user needs to implement `openModalDialog`, `DialogOpenOptions`, or `IDialogHost` in a custom visual project.
 
 **Don't use when:**
 
