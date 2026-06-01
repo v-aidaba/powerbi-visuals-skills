@@ -239,11 +239,12 @@ Add the dialog visual file to the `files` array:
         "allowJs": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "target": "ES6",
+        "target": "es2022",
         "sourceMap": true,
         "outDir": "./.tmp/build/",
         "moduleResolution": "node",
-        "declaration": true
+        "declaration": true,
+        "lib": ["es2022", "dom"]
     },
     "files": [
         "./src/visual.ts",
