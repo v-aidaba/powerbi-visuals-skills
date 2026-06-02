@@ -26,8 +26,16 @@ The dialog visual is registered as a separate class in `pbiviz.json` and referen
 
 **Key architectural constraints:**
 - The dialog visual does NOT receive `dataViews` — it has no access to the data model
-- The dialog visual receives `DialogConstructorOptions` (not `VisualConstructorOptions`)
-- Communication between host and dialog happens only through `dialogActionService.close(resultString)` and `sessionStorage`/`localStorage`
+- The dialog visual receives `DialogConstructorOptions` which contains `element` (HTMLElement) and `host` (IDialogHost)
+- Communication between host and dialog happens through `IDialogHost.close(actionId, resultState)`, `IDialogHost.setResult(resultState)`, and `sessionStorage`/`localStorage`
+
+**IMPORTANT type notes (common source of compile errors):**
+- `DialogConstructorOptions` has property `host` (type `IDialogHost`), NOT `actionService`
+- `IDialogHost` is at `powerbi.extensibility.visual.IDialogHost`, NOT `powerbi.extensibility.IDialogActionService`
+- `DialogOpenOptions.size` is type `RectSize` (`{ width: number, height: number }`), NOT a number
+- `DialogOpenOptions.position` is type `VisualDialogPosition` (`{ type: VisualDialogPositionType }`), NOT a number
+- `DialogOpenOptions.actionButtons` is a required `DialogAction[]` array
+- `IDialogHost.close()` takes `DialogAction` enum values, NOT strings
 
 ---
 
@@ -43,15 +51,22 @@ import powerbi from "powerbi-visuals-api";
 import IVisual = powerbi.extensibility.visual.IVisual;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import DialogConstructorOptions = powerbi.extensibility.visual.DialogConstructorOptions;
+import IDialogHost = powerbi.extensibility.visual.IDialogHost;
+import DialogAction = powerbi.DialogAction;
 
 export class DialogVisual implements IVisual {
     private target: HTMLElement;
-    private dialogActionService: powerbi.extensibility.IDialogActionService;
+    private dialogHost: IDialogHost;
 
     constructor(options: DialogConstructorOptions) {
         this.target = options.element;
-        this.dialogActionService = options.actionService;
-        this.renderDialogContent();
+        this.dialogHost = options.host;
+
+        try {
+            this.renderDialogContent();
+        } catch (error) {
+            this.target.textContent = "Error loading dialog content.";
+        }
     }
 
     private renderDialogContent(): void {
@@ -97,7 +112,7 @@ export class DialogVisual implements IVisual {
         okButton.style.color = "#ffffff";
         okButton.style.cursor = "pointer";
         okButton.addEventListener("click", () => {
-            this.dialogActionService.close("accepted");
+            this.dialogHost.close(DialogAction.OK);
         });
         buttonRow.appendChild(okButton);
 
@@ -111,7 +126,7 @@ export class DialogVisual implements IVisual {
         closeButton.style.color = "#333";
         closeButton.style.cursor = "pointer";
         closeButton.addEventListener("click", () => {
-            this.dialogActionService.close("closed");
+            this.dialogHost.close(DialogAction.Close);
         });
         buttonRow.appendChild(closeButton);
 
@@ -126,60 +141,74 @@ export class DialogVisual implements IVisual {
 
 ### Step 2: Update the Host Visual to Open the Dialog
 
-In your main `src/visual.ts`, add the `openModalDialog()` call:
+In your main visual file (e.g. `src/visual.ts`), add the necessary imports, a trigger button, and the `openModalDialog()` call.
+
+**Add these imports** to the existing import section:
 
 ```typescript
-import powerbi from "powerbi-visuals-api";
-
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisual = powerbi.extensibility.visual.IVisual;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
+import DialogAction = powerbi.DialogAction;
+import VisualDialogPositionType = powerbi.VisualDialogPositionType;
+```
 
-export class Visual implements IVisual {
-    private host: IVisualHost;
-    private target: HTMLElement;
+**Add the trigger button** at the end of the `constructor`:
 
-    constructor(options: VisualConstructorOptions) {
-        this.host = options.host;
-        this.target = options.element;
-
+```typescript
+        // Dialog trigger button
         const openDialogBtn = document.createElement("button");
-        openDialogBtn.textContent = "Open Dialog";
-        openDialogBtn.addEventListener("click", () => this.showDialog());
-        this.target.appendChild(openDialogBtn);
-    }
+        openDialogBtn.textContent = "Details";
+        openDialogBtn.style.position = "absolute";
+        openDialogBtn.style.top = "5px";
+        openDialogBtn.style.right = "5px";
+        openDialogBtn.style.padding = "4px 12px";
+        openDialogBtn.style.border = "none";
+        openDialogBtn.style.borderRadius = "4px";
+        openDialogBtn.style.backgroundColor = "#0078d4";
+        openDialogBtn.style.color = "#ffffff";
+        openDialogBtn.style.cursor = "pointer";
+        openDialogBtn.style.fontSize = "12px";
+        openDialogBtn.style.zIndex = "1000";
+        openDialogBtn.addEventListener("click", () => this.openDialog());
+        element.appendChild(openDialogBtn);
+```
 
-    private showDialog(): void {
+**Add the dialog method** to the class (e.g. after `getFormattingModel()`):
+
+```typescript
+    private isDialogOpen: boolean = false;
+
+    public openDialog(): void {
+        if (this.isDialogOpen) return;
+        this.isDialogOpen = true;
+
         const dialogOptions: DialogOpenOptions = {
-            title: "My Dialog",
-            size: 0,                              // 0 = Large, 1 = Small
-            position: 0,                          // 0 = Center
-            dialogVisualClassName: "DialogVisual" // Must match class name in pbiviz.json
+            title: "Visual Details",
+            size: { width: 600, height: 400 },
+            position: { type: VisualDialogPositionType.Center },
+            actionButtons: [DialogAction.OK, DialogAction.Close]
         };
 
-        this.host.openModalDialog(
-            dialogOptions.dialogVisualClassName,
+        this.visualHost.openModalDialog(
+            "DialogVisual",
             dialogOptions,
-            dialogOptions.title
+            {}
         ).then((result) => {
-            // result.actionId = string passed to dialogActionService.close()
-            console.log("Dialog result:", result.actionId);
-        }).catch((error) => {
-            console.error("Dialog error:", error);
+            this.isDialogOpen = false;
+            if (!result || !result.actionId) {
+                return;
+            }
+            // Handle result.actionId and result.resultState here
+        }).catch(() => {
+            this.isDialogOpen = false;
         });
     }
-
-    public update(options: VisualUpdateOptions): void {
-        // Your existing update logic
-    }
-}
 ```
+
+**Note:** Replace `this.visualHost` with whatever your visual uses as the IVisualHost reference (e.g. `this.host`).
 
 ### Step 3: Register the Dialog Visual in `pbiviz.json`
 
-Add the `dialogVisual` section:
+Add the `dialogVisual` section at the top level (sibling to `visual` and `apiVersion`):
 
 ```json
 {
@@ -255,10 +284,15 @@ private async confirmAction(): Promise<boolean> {
     try {
         const result = await this.host.openModalDialog(
             "DialogVisual",
-            { title: "Confirm Action", size: 1, position: 0, dialogVisualClassName: "DialogVisual" },
-            "Confirm Action"
+            {
+                title: "Confirm Action",
+                size: { width: 400, height: 300 },
+                position: { type: VisualDialogPositionType.Center },
+                actionButtons: [DialogAction.OK, DialogAction.Cancel]
+            },
+            {}
         );
-        return result?.actionId === "accepted";
+        return result?.actionId === DialogAction.OK;
     } catch {
         return false;
     }
@@ -267,19 +301,20 @@ private async confirmAction(): Promise<boolean> {
 
 ### Settings / Configuration Dialog
 
-Build a form in the dialog visual, collect values, serialize them as JSON, and pass via `dialogActionService.close(jsonString)`:
+Build a form in the dialog visual, collect values, and pass via `dialogHost.setResult()` then `dialogHost.close()`:
 
 ```typescript
 // In the dialog visual — serialize form data on OK:
 okButton.addEventListener("click", () => {
     const formData = { name: nameInput.value, color: colorPicker.value };
-    this.dialogActionService.close(JSON.stringify(formData));
+    this.dialogHost.setResult(formData);
+    this.dialogHost.close(DialogAction.OK);
 });
 
-// In the host visual — parse the result:
-this.host.openModalDialog(...).then((result) => {
-    if (result.actionId && result.actionId !== "closed") {
-        const formData = JSON.parse(result.actionId);
+// In the host visual — read the resultState:
+this.host.openModalDialog("DialogVisual", dialogOptions, {}).then((result) => {
+    if (result.actionId === DialogAction.OK && result.resultState) {
+        const formData = result.resultState as { name: string; color: string };
         // Use formData...
     }
 });
@@ -305,31 +340,118 @@ const data = JSON.parse(sessionStorage.getItem("dialogData") || "{}");
 
 ### DialogOpenOptions (passed to `openModalDialog`)
 
-| Property | Type | Description |
-|---|---|---|
-| `title` | `string` | Title bar text of the dialog |
-| `size` | `number` | `0` = Large (600×400), `1` = Small (400×300) |
-| `position` | `number` | `0` = Center (only option currently) |
-| `dialogVisualClassName` | `string` | Class name of the dialog visual (must match `pbiviz.json`) |
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `title` | `string` | Yes | Title bar text of the dialog |
+| `size` | `RectSize` | No | `{ width: number, height: number }` — dialog dimensions in pixels |
+| `position` | `VisualDialogPosition` | No | `{ type: VisualDialogPositionType.Center }` or `{ type: VisualDialogPositionType.RelativeToVisual }` |
+| `actionButtons` | `DialogAction[]` | Yes | Array of action buttons (e.g. `[DialogAction.OK, DialogAction.Close]`) |
+
+### RectSize
+
+```typescript
+interface RectSize {
+    width: number;
+    height: number;
+}
+```
+
+### VisualDialogPosition
+
+```typescript
+interface VisualDialogPosition {
+    type: VisualDialogPositionType;
+    left?: number;
+    top?: number;
+}
+```
 
 ### DialogConstructorOptions (received by dialog visual)
 
 | Property | Type | Description |
 |---|---|---|
 | `element` | `HTMLElement` | DOM element for the dialog visual to render into |
-| `actionService` | `IDialogActionService` | Service to close the dialog and return a result |
+| `host` | `IDialogHost` | Service to close the dialog and return a result |
 
-### IDialogActionService
+### IDialogHost
 
 | Method | Description |
 |---|---|
-| `close(resultPayload: string)` | Closes the dialog and returns the result string to the host |
+| `setResult(resultState: object)` | Sets the result data without closing the dialog |
+| `close(actionId: DialogAction, resultState?: object)` | Closes the dialog with an action and optional result |
 
-### IDialogCloseResult (received by host visual)
+### DialogAction (const enum in `powerbi` namespace)
+
+| Value | Number | Description |
+|---|---|---|
+| `DialogAction.Close` | 0 | Dialog dismissed |
+| `DialogAction.OK` | 1 | User confirmed |
+| `DialogAction.Cancel` | 2 | User cancelled |
+| `DialogAction.Continue` | 3 | Continue action |
+| `DialogAction.No` | 4 | User said no |
+| `DialogAction.Yes` | 5 | User said yes |
+
+### VisualDialogPositionType (const enum in `powerbi` namespace)
+
+| Value | Number | Description |
+|---|---|---|
+| `VisualDialogPositionType.Center` | 0 | Centered on screen |
+| `VisualDialogPositionType.RelativeToVisual` | 1 | Positioned relative to the visual |
+
+### ModalDialogResult (received by host visual)
 
 | Property | Type | Description |
 |---|---|---|
-| `actionId` | `string` | The result string passed to `close()` |
+| `actionId` | `DialogAction` | The action enum value from the dialog |
+| `resultState` | `object` | The result object set via `setResult()` or passed to `close()` |
+
+### openModalDialog Signature
+
+```typescript
+openModalDialog: (dialogId: string, options?: DialogOpenOptions, initialState?: object) => IPromise<ModalDialogResult>
+```
+
+- `dialogId` — The class name of the dialog visual (must match `pbiviz.json` `dialogVisual.visualClassName`)
+- `options` — Dialog configuration (size, position, action buttons)
+- `initialState` — Optional object passed to the dialog (accessible in dialog via constructor)
+
+---
+
+## Import Reference
+
+### Host Visual Imports
+
+```typescript
+import powerbi from "powerbi-visuals-api";
+import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
+import DialogAction = powerbi.DialogAction;
+import VisualDialogPositionType = powerbi.VisualDialogPositionType;
+```
+
+### Dialog Visual Imports
+
+```typescript
+import powerbi from "powerbi-visuals-api";
+import IVisual = powerbi.extensibility.visual.IVisual;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import DialogConstructorOptions = powerbi.extensibility.visual.DialogConstructorOptions;
+import IDialogHost = powerbi.extensibility.visual.IDialogHost;
+import DialogAction = powerbi.DialogAction;
+```
+
+### WRONG imports (will cause compile errors):
+
+```typescript
+// ❌ WRONG — IDialogActionService does not exist
+import IDialogActionService = powerbi.extensibility.IDialogActionService;
+
+// ❌ WRONG — actionService does not exist on DialogConstructorOptions
+this.dialogActionService = options.actionService;
+
+// ✅ CORRECT — use IDialogHost from options.host
+import IDialogHost = powerbi.extensibility.visual.IDialogHost;
+this.dialogHost = options.host;
+```
 
 ---
 
@@ -382,12 +504,32 @@ If you forget to add the dialog file, webpack won't bundle it:
 "files": ["./src/visual.ts", "./src/dialogVisual.ts"]  // ✅
 ```
 
-### Edge Case 4: User closes dialog via X button or Escape key
+### Edge Case 4: Using wrong types for size and position
+
+```typescript
+// ❌ WRONG — size and position cannot be plain numbers
+const dialogOptions: DialogOpenOptions = {
+    title: "My Dialog",
+    size: 0,                    // ❌ Type 'number' is not assignable to type 'RectSize'
+    position: 0,                // ❌ Type 'number' is not assignable to type 'VisualDialogPosition'
+    actionButtons: []
+};
+
+// ✅ CORRECT — use proper object types
+const dialogOptions: DialogOpenOptions = {
+    title: "My Dialog",
+    size: { width: 600, height: 400 },
+    position: { type: VisualDialogPositionType.Center },
+    actionButtons: [DialogAction.OK, DialogAction.Close]
+};
+```
+
+### Edge Case 5: User closes dialog via X button or Escape key
 
 When the user closes the dialog using the browser's X button or Escape, the promise may reject or return undefined. Always handle this:
 
 ```typescript
-this.host.openModalDialog(...).then((result) => {
+this.host.openModalDialog("DialogVisual", dialogOptions, {}).then((result) => {
     if (!result || !result.actionId) {
         // User closed without action (X button, Escape)
         return;
@@ -399,7 +541,7 @@ this.host.openModalDialog(...).then((result) => {
 });
 ```
 
-### Edge Case 5: Opening multiple dialogs
+### Edge Case 6: Opening multiple dialogs
 
 Power BI only supports **one dialog at a time**. If you try to open a second dialog while one is already open, it will be rejected:
 
@@ -408,7 +550,7 @@ Power BI only supports **one dialog at a time**. If you try to open a second dia
 this.showDialog();
 this.showDialog();  // ❌ Second call will fail
 
-// CORRECT — wait for the first to close
+// CORRECT — guard against double-open
 private isDialogOpen = false;
 
 private async showDialog(): Promise<void> {
@@ -416,7 +558,7 @@ private async showDialog(): Promise<void> {
     this.isDialogOpen = true;
 
     try {
-        const result = await this.host.openModalDialog(...);
+        const result = await this.host.openModalDialog("DialogVisual", dialogOptions, {});
         // Process result...
     } finally {
         this.isDialogOpen = false;
@@ -424,7 +566,7 @@ private async showDialog(): Promise<void> {
 }
 ```
 
-### Edge Case 6: Large data in sessionStorage
+### Edge Case 7: Large data in sessionStorage
 
 `sessionStorage` has a ~5MB limit. For large datasets, pass only the necessary subset:
 
@@ -440,14 +582,14 @@ const dialogPayload = {
 sessionStorage.setItem("dialogData", JSON.stringify(dialogPayload));  // ✅
 ```
 
-### Edge Case 7: Dialog visual constructor throws
+### Edge Case 8: Dialog visual constructor throws
 
 If the dialog visual constructor throws an error, the dialog will appear blank. Always wrap initialization in try/catch:
 
 ```typescript
 constructor(options: DialogConstructorOptions) {
     this.target = options.element;
-    this.dialogActionService = options.actionService;
+    this.dialogHost = options.host;
 
     try {
         this.renderDialogContent();
@@ -456,6 +598,18 @@ constructor(options: DialogConstructorOptions) {
         console.error("Dialog init error:", error);
     }
 }
+```
+
+### Edge Case 9: Passing strings to dialogHost.close()
+
+```typescript
+// ❌ WRONG — close() takes DialogAction enum, NOT strings
+this.dialogHost.close("accepted");
+this.dialogHost.close("closed");
+
+// ✅ CORRECT — use DialogAction enum values
+this.dialogHost.close(DialogAction.OK);
+this.dialogHost.close(DialogAction.Close);
 ```
 
 ---
@@ -470,6 +624,10 @@ constructor(options: DialogConstructorOptions) {
 | Opening dialog during `update()` | Can cause infinite loops or UI freezes | Only open on user interaction (click) |
 | Storing sensitive data in sessionStorage without clearing | Data persists until tab closes | Clear immediately after dialog closes |
 | Relying on dialog `update()` being called | Dialog never receives updates | Put all logic in constructor |
+| Using `options.actionService` | Property doesn't exist, compile error | Use `options.host` (type `IDialogHost`) |
+| Using `IDialogActionService` type | Doesn't exist in namespace | Use `IDialogHost` from `powerbi.extensibility.visual` |
+| Passing numbers for `size`/`position` | Type mismatch compile error | Use `RectSize` and `VisualDialogPosition` objects |
+| Passing strings to `close()` | Type mismatch, won't compile | Use `DialogAction` enum values |
 
 ---
 
@@ -477,12 +635,16 @@ constructor(options: DialogConstructorOptions) {
 
 | Problem | Solution |
 |---|---|
+| `'IDialogActionService' has no exported member` | Use `IDialogHost` from `powerbi.extensibility.visual.IDialogHost` instead |
+| `'actionService' does not exist on type 'DialogConstructorOptions'` | Use `options.host` (not `options.actionService`) |
+| `Type 'number' is not assignable to type 'RectSize'` | Use `{ width: 600, height: 400 }` instead of a number |
+| `Type 'number' is not assignable to type 'VisualDialogPosition'` | Use `{ type: VisualDialogPositionType.Center }` instead of a number |
 | Dialog doesn't open | Ensure `"openModalDialog"` is in `capabilities.json` privileges |
 | `openModalDialog is not a function` | Update `powerbi-visuals-api` to version 4.0+ |
 | Dialog opens but is blank | Verify `dialogVisualClassName` in `pbiviz.json` matches the class name |
 | Dialog visual not found at runtime | Make sure dialog class is exported and in `tsconfig.json` files array |
-| Result is undefined | Ensure dialog calls `dialogActionService.close("value")` before closing |
-| Only Close button works | Make sure both button click handlers call `dialogActionService.close()` |
+| Result is undefined | Ensure dialog calls `dialogHost.close(DialogAction.OK)` before closing |
+| Only Close button works | Make sure both button click handlers call `dialogHost.close()` with appropriate `DialogAction` |
 | Dialog doesn't open in published report | WebAccess privilege must have `"essential": true` |
 
 ---
@@ -490,7 +652,7 @@ constructor(options: DialogConstructorOptions) {
 ## Files That May Need Changes
 
 - `src/dialogVisual.ts` — **New file**: Dialog visual class
-- `src/visual.ts` — **Updated**: Add `openModalDialog()` call
+- `src/visual.ts` — **Updated**: Add imports, trigger button in constructor, and `openDialog()` method
 - `pbiviz.json` — **Updated**: Add `dialogVisual` section
 - `tsconfig.json` — **Updated**: Add `./src/dialogVisual.ts` to files array
 - `capabilities.json` — **Updated**: Add `WebAccess` privilege with `openModalDialog`
@@ -499,11 +661,19 @@ constructor(options: DialogConstructorOptions) {
 
 - [ ] `src/dialogVisual.ts` exists with a class implementing `IVisual`
 - [ ] Dialog class uses `DialogConstructorOptions` (not `VisualConstructorOptions`)
-- [ ] `dialogActionService.close()` is called with a result string in every button handler
+- [ ] Dialog class accesses `options.host` (not `options.actionService`)
+- [ ] Dialog class stores host as `IDialogHost` (not `IDialogActionService`)
+- [ ] `dialogHost.close(DialogAction.XX)` is called with enum values in every button handler
 - [ ] `pbiviz.json` has `dialogVisual.visualClassName` matching the exact class name
 - [ ] `tsconfig.json` includes `./src/dialogVisual.ts` in the `files` array
 - [ ] `capabilities.json` has `WebAccess` privilege with `"openModalDialog"` parameter
+- [ ] Host visual imports `DialogOpenOptions`, `DialogAction`, and `VisualDialogPositionType`
+- [ ] Host visual uses `size: { width: N, height: N }` (not a plain number)
+- [ ] Host visual uses `position: { type: VisualDialogPositionType.Center }` (not a plain number)
+- [ ] Host visual provides `actionButtons: [DialogAction.OK, DialogAction.Close]`
 - [ ] Host visual handles both `.then()` and `.catch()` for `openModalDialog`
+- [ ] Host visual has `isDialogOpen` guard to prevent double-opening
+- [ ] Host visual has a button (or other user interaction) that triggers the dialog
 - [ ] Dialog is only opened on user interaction (not during `update()`)
 - [ ] Sensitive data in `sessionStorage` is cleared after dialog closes
 - [ ] No unrelated files were changed
