@@ -27,6 +27,11 @@ export interface SkillEntry {
     safe: boolean;
     /** `true` if the skill includes a `scripts/` directory. */
     scripts: boolean;
+    /**
+     * Explicit list of all files in the skill directory, paths relative to `path`.
+     * Enables to fetch each file directly via raw.githubusercontent.com without using the rate-limited GitHub contents API.
+     */
+    files: string[];
 }
 
 export interface SkillsManifest {

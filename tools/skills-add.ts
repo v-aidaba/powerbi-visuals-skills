@@ -90,6 +90,7 @@ const newEntry: SkillEntry = {
     dependencies: [],
     safe: true,
     scripts: false,
+    files: ["SKILL.md", "references/README.md"],
 };
 
 manifest.skills.push(newEntry);

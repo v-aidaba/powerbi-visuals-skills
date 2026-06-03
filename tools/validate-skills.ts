@@ -11,7 +11,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
-import { SkillEntry, SkillsManifest } from "./types";
+import { SkillsManifest } from "./types";
 
 const ROOT = path.resolve(__dirname, "..");
 const SKILLS_DIR = path.join(ROOT, "skills");
@@ -139,6 +139,42 @@ for (const skill of manifest.skills) {
         for (const dep of skill.dependencies) {
             if (!manifest.skills.some((s) => s.id === dep)) {
                 error(`"${skill.id}" depends on "${dep}", which is not in skills.json.`);
+            }
+        }
+    }
+
+    // `files` array: required, must list every file on disk and match exactly.
+    if (!Array.isArray(skill.files) || skill.files.length === 0) {
+        error(`"${skill.id}" is missing the "files" array in skills.json.`);
+    } else {
+        if (!skill.files.includes("SKILL.md")) {
+            error(`"${skill.id}" files array must include "SKILL.md".`);
+        }
+
+        // Collect all files actually on disk, relative to the skill dir.
+        const filesOnDisk = new Set<string>();
+        const walk = (dir: string, prefix: string): void => {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+                if (entry.isDirectory()) {
+                    walk(path.join(dir, entry.name), rel);
+                } else if (entry.isFile()) {
+                    filesOnDisk.add(rel);
+                }
+            }
+        };
+        walk(skillDir, "");
+
+        const filesInManifest = new Set(skill.files);
+
+        for (const declared of skill.files) {
+            if (!filesOnDisk.has(declared)) {
+                error(`"${skill.id}" files array lists "${declared}" but it does not exist on disk.`);
+            }
+        }
+        for (const actual of filesOnDisk) {
+            if (!filesInManifest.has(actual)) {
+                error(`"${skill.id}" has file "${actual}" on disk that is not declared in the manifest "files" array.`);
             }
         }
     }

@@ -65,6 +65,7 @@ The root [`skills.json`](/skills.json) file drives the install command. Key fiel
 | `dependencies`    | no       | Array of other skill IDs that this skill recommends installing together. |
 | `safe`            | yes      | `true` if the skill contains no executable code.                        |
 | `scripts`         | yes      | `true` if the skill includes a `scripts/` directory.                    |
+| `files`           | yes      | Explicit list of every file in the skill directory, paths relative to `path`. `SKILL.md` must be included (by convention listed first). Enables consumers to fetch files directly via `raw.githubusercontent.com` without using the rate-limited GitHub contents API. |
 
 ## Security
 

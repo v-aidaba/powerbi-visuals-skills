@@ -16,7 +16,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "add-localization",
@@ -30,7 +34,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "add-selections",
@@ -44,7 +52,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "advanced-edit-mode",
@@ -58,7 +70,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "analytics-pane",
@@ -72,7 +88,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "bookmarks-support",
@@ -86,7 +106,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "conditional-formatting",
@@ -100,7 +124,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "context-menu",
@@ -114,7 +142,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "dialog-box",
@@ -128,7 +160,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "display-subtotal-data",
@@ -142,7 +178,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "display-warning-icon",
@@ -156,7 +196,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "drill-down",
@@ -170,7 +214,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "dynamic-drill-support",
@@ -184,7 +232,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "fetch-more-data",
@@ -198,7 +250,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "file-download-api",
@@ -212,7 +268,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "format-pane",
@@ -226,7 +286,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "high-contrast-mode",
@@ -240,7 +304,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "highlight-data",
@@ -254,7 +322,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "keyboard-navigation",
@@ -268,7 +340,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "landing-page",
@@ -282,7 +358,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "launch-url",
@@ -296,7 +376,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "local-storage-api",
@@ -310,7 +394,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "on-object-formatting",
@@ -324,7 +412,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "permissions-api",
@@ -338,7 +430,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "rendering-events",
@@ -352,7 +448,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "selection-across-visuals",
@@ -366,7 +466,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "sync-slicers",
@@ -380,7 +484,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "unit-tests",
@@ -394,7 +502,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     },
     {
       "id": "visuals-tooltips",
@@ -408,7 +520,11 @@
       ],
       "dependencies": [],
       "safe": true,
-      "scripts": false
+      "scripts": false,
+      "files": [
+        "SKILL.md",
+        "references/README.md"
+      ]
     }
   ]
 }

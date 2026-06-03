@@ -60,6 +60,19 @@ The full schema is defined in [`tools/types.ts`](tools/types.ts#L11-L30) (`Skill
 - **`dependencies`**: array of other skill IDs this skill recommends. Use `[]` if none.
 - `safe` must be `true` unless the skill contains executable content (strongly discouraged).
 - `scripts` must be `false` - no `scripts/` directories.
+- **`files`**: required. Explicit list of every file in the skill directory, paths relative to `path`. Must include `SKILL.md` (by convention listed first), followed by any `references/*` and other static assets. If you add or remove a file in the skill directory, update this array. `npm run validate` fails when the list is missing entries or references files that do not exist on disk.
+
+Example:
+
+```json
+{
+  "id": "bookmarks-support",
+  "path": "skills/bookmarks-support",
+  "files": ["SKILL.md", "references/README.md"]
+}
+```
+
+This lets consumers (such as the MCP server in `microsoft/PowerBI-visuals-tools`) fetch each file directly from `raw.githubusercontent.com` without using the rate-limited GitHub contents API.
 
 ### 5. Validate locally
 
@@ -74,6 +87,7 @@ It checks that:
 - The `name` in SKILL.md frontmatter matches the `id`.
 - No orphaned skill directories exist without a `skills.json` entry.
 - All `dependencies` reference valid skill IDs.
+- The `files` array lists every file present on disk (no missing or extra entries) and includes `SKILL.md`.
 
 ### 6. Open a pull request
 
