@@ -5,10 +5,10 @@
  *
  * Usage:  npm run skills-add -- <skill-id>
  *
- * Creates:
- *   skills/<skill-id>/SKILL.md          (from templates/new-skill/SKILL.md)
- *   skills/<skill-id>/references/README.md (from templates/new-skill/references/README.md)
- *   Adds an entry to skills.json
+ * Copies every file under templates/new-skill/ into skills/<skill-id>/,
+ * applies placeholders, and adds an entry to skills.json with the same
+ * file list. If the template grows, both the scaffolded skill and the
+ * manifest stay in sync automatically.
  */
 
 import * as fs from "fs";
@@ -67,16 +67,30 @@ function applyPlaceholders(content: string, id: string): string {
         .replace(/\{\{DESCRIPTION\}\}/g, `Implement ${title} in a Power BI custom visual.`);
 }
 
+function collectFiles(dir: string, prefix = ""): string[] {
+    const result: string[] = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) {
+            result.push(...collectFiles(path.join(dir, entry.name), rel));
+        } else {
+            result.push(rel);
+        }
+    }
+    return result;
+}
+
 // ── Scaffold files ──────────────────────────────────────────────────────────
 
-const refsDir = path.join(skillDir, "references");
-fs.mkdirSync(refsDir, { recursive: true });
+const templateFiles = collectFiles(TEMPLATES_DIR);
 
-const skillMdTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, "SKILL.md"), "utf-8");
-fs.writeFileSync(path.join(skillDir, "SKILL.md"), applyPlaceholders(skillMdTemplate, skillId));
-
-const refsMdTemplate = fs.readFileSync(path.join(TEMPLATES_DIR, "references", "README.md"), "utf-8");
-fs.writeFileSync(path.join(refsDir, "README.md"), applyPlaceholders(refsMdTemplate, skillId));
+for (const relPath of templateFiles) {
+    const srcPath = path.join(TEMPLATES_DIR, relPath);
+    const destPath = path.join(skillDir, relPath);
+    fs.mkdirSync(path.dirname(destPath), { recursive: true });
+    const content = fs.readFileSync(srcPath, "utf-8");
+    fs.writeFileSync(destPath, applyPlaceholders(content, skillId));
+}
 
 // ── Update skills.json ──────────────────────────────────────────────────────
 
@@ -90,7 +104,7 @@ const newEntry: SkillEntry = {
     dependencies: [],
     safe: true,
     scripts: false,
-    files: ["SKILL.md", "references/README.md"],
+    files: templateFiles,
 };
 
 manifest.skills.push(newEntry);
@@ -100,8 +114,9 @@ fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
 // ── Done ────────────────────────────────────────────────────────────────────
 
 console.log(`\nCreated skill "${skillId}":\n`);
-console.log(`  skills/${skillId}/SKILL.md`);
-console.log(`  skills/${skillId}/references/README.md`);
+for (const relPath of templateFiles) {
+    console.log(`  skills/${skillId}/${relPath}`);
+}
 console.log(`  skills.json updated\n`);
 console.log(`Next steps:`);
 console.log(`  1. Edit skills/${skillId}/SKILL.md - fill in trigger, overview, steps`);
